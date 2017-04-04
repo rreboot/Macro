@@ -6,6 +6,7 @@ Sub Main
 	Dim oTxt, oVcurs, oTcurs 
 	Dim GroupNum%
 	Dim counter%
+	Dim MyFormat$
 	
 	GlobalScope.BasicLibraries.loadLibrary("Tools")
 
@@ -14,6 +15,7 @@ Sub Main
 	oDoc = OpenDocument(Path, NoArgs())
 
 	oDoc.Text.String = ""
+	MyFormat = "+0;-0;0"
 	
 	GroupNum = 1
 
@@ -31,8 +33,8 @@ Sub Main
 		Dn = oBook.Sheets(counter).getCellByPosition(1, 7).getString()
 		Pn = oBook.Sheets(counter).getCellByPosition(1, 8).getString()
 		Env = oBook.Sheets(counter).getCellByPosition(1, 9).getString()		
-		T1 = oBook.Sheets(counter).getCellByPosition(1, 10).getString()
-		T2 = oBook.Sheets(counter).getCellByPosition(2, 10).getString()
+		T1 = Format(oBook.Sheets(counter).getCellByPosition(1, 10).getString(), MyFormat)
+		T2 = Format(oBook.Sheets(counter).getCellByPosition(2, 10).getString(), MyFormat)
 		Pw = oBook.Sheets(counter).getCellByPosition(1, 11).getString()
 		Pw = Pw & " ךדס/סל" & Chr(178)
 		
@@ -45,7 +47,7 @@ Sub Main
 		If  oBook.Sheets(counter).DrawPage.Forms("Standard").getByName("IsAnsi").State = 1 Then
 			Pn = Pn & "#"
 		else
-			Pn = Pn & " ךדס/סל"
+			Pn = Pn & " ךדס/סל" & Chr(178)
 		End If
 		
 		If oBook.Sheets(counter).DrawPage.Forms("Standard").getByName("IsAvg").State = 1 Then

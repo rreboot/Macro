@@ -78,7 +78,7 @@ Sub Main
 			a(Nrow, 9) = P2
 			
 			Nrow = Nrow + 1
-			id = id + 1			
+			id = id + 1
 			
 		Next i	
 	Next counter
