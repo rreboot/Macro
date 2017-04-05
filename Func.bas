@@ -6,6 +6,14 @@ Dim oRow, oEmptyRanges, Count%
 	GetLastUsedColumn = oEmptyRanges.RangeAddresses(Count-1).StartColumn - 1
 End Function
 
+Function GetLastUsedRow(oSheet, ColNumber) As Integer		
+Dim oCol, oEmptyRanges, Count%		
+	oCol = oSheet.getColumns().getByIndex(ColNumber)
+	oEmptyRanges = oCol.queryEmptyCells
+	Count = oEmptyRanges.Count		
+	GetLastUsedRow = oEmptyRanges.RangeAddresses(Count-1).StartRow - 1
+End Function
+
 Function CreateTable(document, rows%, cols%) As Object
 Dim oTextTable	
 	oTextTable = document.createInstance("com.sun.star.text.TextTable")
@@ -122,3 +130,25 @@ Function ConvertFromAnsi(ansi%)
 			ConvertFromAnsi = 0
 	End Select
 End Function
+
+Function Replace_symbols(ByVal txt As String) As String
+    St$ = "~!?@/\#$%^&*=|`"""
+    For i% = 1 To Len(St$)
+        txt = Replace(txt, Mid(St$, i, 1), "_")
+    Next
+    Replace_symbols = txt
+End Function
+
+Sub CheckPressure
+	oBook = ThisComponent
+	Pw = CDbl(oBook.CurrentController.ActiveSheet.getCellByPosition(1, 11).getString())
+	Pn = CDbl(oBook.CurrentController.ActiveSheet.getCellByPosition(1, 8).getString())
+	If oBook.CurrentController.ActiveSheet.DrawPage.Forms("Standard").getByName("IsAnsi").State = 1 Then
+		Pn = ConvertFromAnsi(Pn)
+	End If
+	
+	If Pw > Pn Then
+		msgbox "Рабочее давление больше номинального! Проверьте входные параметры!"
+	End If	
+End Sub
+

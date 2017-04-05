@@ -76,7 +76,6 @@ Sub Main(NumSheets)
 		MinBody = Func.Min(DataArr(6))
 		TempRange = oBook.Sheets(counter).getCellRangeByPosition(1, 10, 2, 10).getData()
 		Temperature = Func.Max(TempRange(0))
-		Pr = oBook.Sheets(counter).getCellByPosition(1, 8).getString()
 		
 		If oBook.Sheets(counter).DrawPage.Forms("Standard").getByName("IsAvg").State = 1 _
 		Or Temperature < 20 Then
