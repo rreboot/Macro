@@ -41,7 +41,8 @@ Sub subSaveAs(oDoc, sURL, Optional sType)
 		mFileType(0) = createUnoStruct("com.sun.star.beans.PropertyValue")
 		mFileType(0).Name = "FilterName"
 		mFileType(0).Value = sType
-		oDoc.storeAsURL(sURL, mFileType())
+'		oDoc.storeAsURL(sURL, mFileType())
+		oDoc.storeToURL(sURL, mFileType())		
 	End If
 End Sub
 
@@ -138,17 +139,4 @@ Function Replace_symbols(ByVal txt As String) As String
     Next
     Replace_symbols = txt
 End Function
-
-Sub CheckPressure
-	oBook = ThisComponent
-	Pw = CDbl(oBook.CurrentController.ActiveSheet.getCellByPosition(1, 11).getString())
-	Pn = CDbl(oBook.CurrentController.ActiveSheet.getCellByPosition(1, 8).getString())
-	If oBook.CurrentController.ActiveSheet.DrawPage.Forms("Standard").getByName("IsAnsi").State = 1 Then
-		Pn = ConvertFromAnsi(Pn)
-	End If
-	
-	If Pw > Pn Then
-		msgbox "Рабочее давление больше номинального! Проверьте входные параметры!"
-	End If	
-End Sub
 

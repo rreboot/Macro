@@ -45,19 +45,22 @@ Sub Main(NumSheets)
 		Dim TempRange, Temperature#, Pr#, Pansi
 		Dim LastColumn%	
 		Dim Header$, Fname1$, Fname2$
-		Dim oTnormative, oTlist1, oTlist2, oTcalc
+		Dim oTnormative, oTlist1, oTlist2, oTlist1_2, oTlist2_2, oTcalc
 		Dim DataArr()
 		Dim isHs as Boolean
 
 		oDoc1 = Func.OpenAsTemplate(CurDir & "/rc1.odt", True)
 		oDoc2 = Func.OpenAsTemplate(CurDir & "/rc2.odt", True)
 
-		Fname1 = CurDir & "/Расчеты/РП_" & counter & ".odt"
-		Fname2 = CurDir & "/Расчеты/РО_" & counter & ".odt"
+		Fname1 = CurDir & "/Расчеты/РП_" & counter ' & ".odt"
+		Fname2 = CurDir & "/Расчеты/РО_" & counter ' & ".odt"
 		
-		oTnormative = oDoc1.TextTables.getByName("normative")
+		oTnormative1 = oDoc1.TextTables.getByName("normative1")
+		oTnormative2 = oDoc1.TextTables.getByName("normative2")		
 		oTlist1 = oDoc1.TextTables.getByName("list1")
 		oTlist2 = oDoc1.TextTables.getByName("list2")
+		oTlist1_2 = oDoc1.TextTables.getByName("list1_2")
+		oTlist2_2 = oDoc1.TextTables.getByName("list2_2")		
 		oTcalc = oDoc2.TextTables.getByName("calc_data")
 	
 		LastColumn  = Func.GetLastUsedColumn(oBook.Sheets.getByIndex(counter), 14)
@@ -97,19 +100,23 @@ Sub Main(NumSheets)
 			Pr = Func.ConvertFromAnsi(Pansi)
 			Pn = Pn & "#"
 			setOffsetValByCellString(oTlist2, 0, 0, 2, "C", Pansi & " (" & Pr & ")")
+			setOffsetValByCellString(oTlist2_2, 0, 0, 2, "C", Pansi & " (" & Pr & ")")
 		Else
 			Pr = Pn
 			Pansi = 0
 			Pn = "Ру" & Pn
-			RemoveRowsByCellString(oTnormative, 0, 0, "B")
+			RemoveRowsByCellString(oTnormative1, 0, 0, "B")
 			RemoveRowsByCellString(oTlist2, 0, 0, "C")
+			RemoveRowsByCellString(oTnormative2, 0, 0, "B")
+			RemoveRowsByCellString(oTlist2_2, 0, 0, "C")
 		End If	
 
 		If oBook.Sheets(counter).DrawPage.Forms("Standard").getByName("IsHs").State = 1 Then
 			oTcalc.getCellByName("E3").String = Chr(8805) & "5"	
 			isHs = True
 		Else
-			RemoveRowsByCellString(oTnormative, 0, 0, "A")
+			RemoveRowsByCellString(oTnormative1, 0, 0, "A")
+			RemoveRowsByCellString(oTnormative2, 0, 0, "A")			
 			oTcalc.getCellByName("E3").String = Chr(8805) & "8"
 			isHs = False
 		End If		
@@ -120,8 +127,10 @@ Sub Main(NumSheets)
 		
 		If Material = "" Then
 			RemoveRowsByCellString(oTlist2, 0, 0, "B")
+			RemoveRowsByCellString(oTlist2_2, 0, 0, "B")
 		Else
 			setOffsetValByCellString(oTlist2, 0, 0, 2, "B", Material)
+			setOffsetValByCellString(oTlist2_2, 0, 0, 2, "B", Material)
 		End If
 
 		
@@ -135,16 +144,24 @@ Sub Main(NumSheets)
 
 		'Заполнение таблицы 1 - обозначение...
 		oTlist1.Rows.insertByIndex(oTlist1.Rows.Count, LastColumn - 1)
+		oTlist1_2.Rows.insertByIndex(oTlist1_2.Rows.Count, LastColumn - 1)
 		
 		For i = 0 To UBound(DataArr(1))
 			oTlist1.getCellByPosition(0, i + 1).String = DataArr(1)(i)
 			oTlist1.getCellByPosition(1, i + 1).String = DataArr(0)(i)
+			oTlist1_2.getCellByPosition(0, i + 1).String = DataArr(1)(i)
+			oTlist1_2.getCellByPosition(1, i + 1).String = DataArr(0)(i)
 		Next i
 		
 		setOffsetValByCellString(oTlist2, 0, 0, 2, "A", Dmm & " (" & Dinch & Chr(34) & ")")
 		setOffsetValByCellString(oTlist2, 0, 0, 2, "D", Format(Temperature, MyFormat))
 		setOffsetValByCellString(oTlist2, 0, 0, 2, "E", Pr)
 		setOffsetValByCellString(oTlist2, 0, 0, 2, "F", Env)
+
+		setOffsetValByCellString(oTlist2_2, 0, 0, 2, "A", Dmm & " (" & Dinch & Chr(34) & ")")
+		setOffsetValByCellString(oTlist2_2, 0, 0, 2, "D", Format(Temperature, MyFormat))
+		setOffsetValByCellString(oTlist2_2, 0, 0, 2, "E", Pr)
+		setOffsetValByCellString(oTlist2_2, 0, 0, 2, "F", Env)
 		
 
 		oTcalc.getCellByPosition(0, 2).String = Join(DataArr(1), ", ")
@@ -163,8 +180,15 @@ Sub Main(NumSheets)
 			Kill(Fname2)
 		End If
 
-		Func.subSaveAs(oDoc1, Fname1)
-		Func.subSaveAs(oDoc2, Fname2)
+'		Func.subSaveAs(oDoc1, Fname1 & ".pdf", "writer_pdf_Export") ' Экспорт в PDF
+'		Func.subSaveAs(oDoc2, Fname2 & ".pdf", "writer_pdf_Export") ' 
+
+'		Func.subSaveAs(oDoc1, Fname1 & ".png", "writer_png_Export") ' Экспорт в png
+'		Func.subSaveAs(oDoc2, Fname2 & ".png", "writer_png_Export") ' 
+
+		Func.subSaveAs(oDoc1, Fname1 & ".odt") ' Экспорт в ODT
+		Func.subSaveAs(oDoc2, Fname2 & ".odt")
+
 		oDoc1.close(False)
 		oDoc2.close(False)		
 
@@ -184,6 +208,11 @@ End Sub
 Function Calculation(Dmm, Pr, Temp, MinFlange, MinBody, IsHs as Boolean)
 	Dim Sr1, Sr2
 	Dim Sigma
+	
+	If Pr = 0 Then
+		Calculation = "Ошибка. Проверьте номинальное давление"
+		Exit Function
+	End If
 	
 	If IsHs = True Then 
         Select Case Temp
