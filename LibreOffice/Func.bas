@@ -140,3 +140,48 @@ Function Replace_symbols(ByVal txt As String) As String
     Replace_symbols = txt
 End Function
 
+Sub PrintFiles
+	Dim AllFiles$, NextFile$
+	Dim oBook, oDoc
+	Dim a(0) As New com.sun.star.beans.PropertyValue
+	Dim counter%
+
+	GlobalScope.BasicLibraries.loadLibrary("Tools")
+
+	a(0).Name = "Hidden"
+	a(0).Value = True
+	
+	oBook = ThisComponent
+
+	DestDir = DirectoryNameOutOfPath(oBook.getURL(),"/") & "/Расчеты/"
+	NextFile = Dir(ConvertFromUrl(DestDir), 0)
+	counter = 0
+
+	Dim oProgressBar as Object, oProgressBarModel As Object, oDialog as Object
+	Dim oLabel as Object
+	Dim ProgressValue As Long, ProgressValueMin, ProgressValueMax, ProgressStep
+	DialogLibraries.loadLibrary("Standard")
+	oDialog = CreateUnoDialog(DialogLibraries.Standard.Dialog1)
+	ProgressValueMin = 0
+	ProgressValueMax = 1
+	ProgressStep = 1
+	oProgressBarModel = oDialog.getModel().getByName("ProgressBar1")
+	oProgressBarModel.setPropertyValue("ProgressValueMin", ProgressValueMin)
+	oProgressBarModel.setPropertyValue("ProgressValueMax", ProgressValueMax)
+	oDialog.getModel().getByName("Label1").Label = "Печатаем расчеты. Подождите..."
+	oLabel = oDialog.getModel().getByName("Label2")
+	oDialog.setVisible(True)
+	
+	While NextFile <> "" 
+		If InStr(1, NextFile, ".odt") > 0 and InStr(1, NextFile, "~") <= 0 Then	
+			oLabel.Label = NextFile
+			oProgressBarModel.setPropertyValue("ProgressValue", 1)
+			oDoc = StarDesktop.LoadComponentFromUrl(DestDir & NextFile, "_parent" , 0, a()) 
+			oDoc.Print(NoArgs())
+		End If
+		NextFile = Dir
+		wait 3000	
+	Wend
+	
+End Sub
+

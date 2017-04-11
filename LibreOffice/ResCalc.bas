@@ -24,16 +24,13 @@ Sub Main(NumSheets)
 	Dim ProgressValue As Long, ProgressValueMin, ProgressValueMax, ProgressStep
 	DialogLibraries.loadLibrary("Standard")
 	oDialog = CreateUnoDialog(DialogLibraries.Standard.Dialog1)
-	REM progress bar settings
 	ProgressValueMin = 0
 	ProgressValueMax = Ubound(NumSheets()) - Lbound(NumSheets()) + 1
 	ProgressStep = 1
-	REM set minimum and maximum progress value
 	oProgressBarModel = oDialog.getModel().getByName( "ProgressBar1" )
 	oProgressBarModel.setPropertyValue( "ProgressValueMin", ProgressValueMin)
 	oProgressBarModel.setPropertyValue( "ProgressValueMax", ProgressValueMax)
 	oLabel = oDialog.getModel().getByName("Label2")
-	REM show progress bar
 	oDialog.setVisible( True )
 	
 	For counter = Lbound(NumSheets()) to Ubound(NumSheets())
@@ -142,7 +139,6 @@ Sub Main(NumSheets)
 		oDoc1.TextFrames.getByName("ngroup").String = counter
 		oDoc2.TextFrames.getByName("ngroup").String = counter
 
-		'Заполнение таблицы 1 - обозначение...
 		oTlist1.Rows.insertByIndex(oTlist1.Rows.Count, LastColumn - 1)
 		oTlist1_2.Rows.insertByIndex(oTlist1_2.Rows.Count, LastColumn - 1)
 		
